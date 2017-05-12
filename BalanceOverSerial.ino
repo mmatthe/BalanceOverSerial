@@ -30,24 +30,65 @@
 #include <LSM6.h>
 #include "Balance.h"
 
+
+
+// Uncomment the following line to use a MinIMU-9 v5 or AltIMU-10 v5. Leave commented for older IMUs (up through v4).
+#define IMU_V5
+#include "Orientation.h"
+
 LSM6 imu;
 Balboa32U4Motors motors;
 Balboa32U4Encoders encoders;
 Balboa32U4Buzzer buzzer;
 Balboa32U4ButtonA buttonA;
 
+void ImuInit()
+{
+  Wire.begin();
+  Accel_Init();
+  Compass_Init();
+  Gyro_Init();
+
+  delay(20);
+
+  for(int i=0;i<32;i++)    // We take some readings...
+    {
+    Read_Gyro();
+    Read_Accel();
+    for(int y=0; y<6; y++)   // Cumulate values
+      AN_OFFSET[y] += AN[y];
+    delay(20);
+    }
+
+  for(int y=0; y<6; y++)
+    AN_OFFSET[y] = AN_OFFSET[y]/32;
+
+  AN_OFFSET[5]-=GRAVITY*SENSOR_SIGN[5];
+
+  //Serial.println("Offset:");
+  for(int y=0; y<6; y++)
+    Serial.println(AN_OFFSET[y]);
+
+  delay(20);
+  digitalWrite(STATUS_LED,HIGH);
+
+  timer=millis();
+  delay(20);
+  counter=0;
+}
+
 void setup()
 {
   // Uncomment these lines if your motors are reversed.
   // motors.flipLeftMotor(true);
   // motors.flipRightMotor(true);
+  Serial.begin(115200);
+  ImuInit();
 
   ledYellow(0);
   ledRed(1);
   balanceSetup();
   ledRed(0);
-
-  Serial.begin(9600);
 }
 
 const char song[] PROGMEM =
@@ -120,6 +161,17 @@ void standUp()
 
 void loop()
 {
+  static uint16_t lastMeasure;
+  uint16_t ms = millis();
+
+  if ((uint16_t)(ms - lastMeasure) > MEASURE_TIME_MS)
+    {
+      imu.read();
+      lastMeasure = ms;
+    }
+
+  loopOrientation();
+
   if(Serial.available())
     serialAvailable();
 
@@ -221,6 +273,5 @@ void processCommand(char* buffer)
   else if (buffer[0]=='m')
     {
       setGyroMeasurement(atoi(buffer+1));
-      // Serial.println(atoi(buffer+1)+1);
     }
 }

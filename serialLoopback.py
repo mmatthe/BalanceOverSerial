@@ -15,7 +15,7 @@ if not port:
 delay = 1
 i = 1
 
-ser = serial.Serial(port, 9600, timeout=1)
+ser = serial.Serial(port, 115200, timeout=1)
 while True:
     rx = ser.readline()
     start = time.time()

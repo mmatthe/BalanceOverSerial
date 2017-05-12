@@ -29,17 +29,17 @@ bool balanceUpdateDelayed()
 void balanceSetup()
 {
   // Initialize IMU.
-  Wire.begin();
-  if (!imu.init())
-  {
-    while(true)
-    {
-      Serial.println("Failed to detect and initialize IMU!");
-      delay(200);
-    }
-  }
-  imu.enableDefault();
-  imu.writeReg(LSM6::CTRL2_G, 0b01011000); // 208 Hz, 1000 deg/s
+  // Wire.begin();
+  // if (!imu.init())
+  // {
+  //   while(true)
+  //   {
+  //     Serial.println("Failed to detect and initialize IMU!");
+  //     delay(200);
+  //   }
+  // }
+  // imu.enableDefault();
+  // imu.writeReg(LSM6::CTRL2_G, 0b01011000); // 208 Hz, 1000 deg/s
 
   // Wait for IMU readings to stabilize.
   delay(1000);
@@ -186,7 +186,7 @@ void setGyroMeasurement(int16_t gY)
 
 void doMeasurement()
 {
-  imu.read();
+  // imu.read();
   // gyro_Y = imu.g.y;
   Serial.print('m');
   Serial.println(imu.g.y);
