@@ -112,7 +112,7 @@ roll=0
 pitch=0
 yaw=0
 
-delay = 1
+delay = 3
 while 1:
     line = ser.readline()
     if len(line) and line[0] == 'm':
