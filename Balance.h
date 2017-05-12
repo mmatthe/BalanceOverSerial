@@ -80,6 +80,8 @@ const int16_t SPEED_RESPONSE = 3300;
 // you change this, you will have to adjust many other things.
 const uint8_t UPDATE_TIME_MS = 10;
 
+const uint8_t MEASURE_TIME_MS = 2;
+
 // Take 100 measurements initially to calibrate the gyro.
 const uint8_t CALIBRATION_ITERATIONS = 100;
 
@@ -130,3 +132,5 @@ void balanceUpdateSensors();
 // after a large motion, so that robot does not try to make a
 // huge correction to get back to "zero".
 void balanceResetEncoders();
+
+void setGyroMeasurement(int16_t);

@@ -14,6 +14,8 @@ int16_t motorSpeed;
 bool isBalancingStatus;
 bool balanceUpdateDelayedStatus;
 
+int16_t gyro_Y;
+
 bool isBalancing()
 {
   return isBalancingStatus;
@@ -137,7 +139,7 @@ void lyingDown()
 void integrateGyro()
 {
   // Convert from full-scale 1000 deg/s to deg/s.
-  angleRate = (imu.g.y - gYZero) / 29;
+  angleRate = (gyro_Y - gYZero) / 29;
 
   angle += angleRate * UPDATE_TIME_MS;
 }
@@ -177,9 +179,21 @@ void balanceResetEncoders()
   distanceRight = 0;
 }
 
-void balanceUpdateSensors()
+void setGyroMeasurement(int16_t gY)
+{
+  gyro_Y = gY;
+}
+
+void doMeasurement()
 {
   imu.read();
+  // gyro_Y = imu.g.y;
+  Serial.print('m');
+  Serial.println(imu.g.y);
+}
+
+void balanceUpdateSensors()
+{
   integrateGyro();
   integrateEncoders();
 }
@@ -187,7 +201,14 @@ void balanceUpdateSensors()
 void balanceUpdate()
 {
   static uint16_t lastMillis;
+  static uint16_t lastMeasure;
   uint16_t ms = millis();
+
+  if ((uint16_t)(ms - lastMeasure) > MEASURE_TIME_MS)
+    {
+      doMeasurement();
+      lastMeasure = ms;
+    }
 
   // Perform the balance updates at 100 Hz.
   if ((uint16_t)(ms - lastMillis) < UPDATE_TIME_MS) { return; }
@@ -196,6 +217,9 @@ void balanceUpdate()
 
   balanceUpdateSensors();
   balanceDoDriveTicks();
+
+  Serial.print("Use gyro: ");
+  Serial.println(gyro_Y);
 
   if (imu.a.x < 0)
   {

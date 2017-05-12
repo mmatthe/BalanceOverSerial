@@ -46,6 +46,8 @@ void setup()
   ledRed(1);
   balanceSetup();
   ledRed(0);
+
+  Serial.begin(9600);
 }
 
 const char song[] PROGMEM =
@@ -118,6 +120,9 @@ void standUp()
 
 void loop()
 {
+  if(Serial.available())
+    serialAvailable();
+
   balanceUpdate();
 
   if (isBalancing())
@@ -184,4 +189,38 @@ void loop()
     ledYellow(0);
     ledGreen(1);
   }
+}
+
+
+void serialAvailable()
+{
+  static char buffer[32];
+  static uint8_t pos = 0;
+
+  while(Serial.available())
+    {
+      char c = Serial.read();
+      if (c == '\n')
+	{
+	  buffer[pos] = 0;
+	  processCommand(buffer);
+	  pos = 0;
+	}
+      else
+	buffer[pos++] = c;
+    }
+}
+
+void processCommand(char* buffer)
+{
+  if (buffer[0] == 'c')
+    {
+      Serial.print("Command: ");
+      Serial.println(buffer+1);
+    }
+  else if (buffer[0]=='m')
+    {
+      setGyroMeasurement(atoi(buffer+1));
+      // Serial.println(atoi(buffer+1)+1);
+    }
 }
