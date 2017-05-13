@@ -2,12 +2,14 @@ import serial
 import os
 import time
 
-ports = ["/dev/ttyACM0", "/dev/ttyACM1", "/dev/ttyACM1"]
+ports = ["/dev/ttyACM0", "/dev/ttyACM1", "/dev/ttyACM1", "COM10"]
 port = None
 for p in ports:
     if os.path.exists(p):
         port = p
         break
+
+port = "COM10"
 
 if not port:
     raise RuntimeError("No COM port found!")
