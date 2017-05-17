@@ -83,7 +83,7 @@ void setup()
   // motors.flipLeftMotor(true);
   // motors.flipRightMotor(true);
   Serial.begin(115200);
-  Serial1.begin(100000);
+  Serial1.begin(200000);
   ImuInit();
 
   ledYellow(0);
@@ -279,7 +279,10 @@ void processCommand(char* buffer)
     {
       int m = atoi(buffer+1);
       setGyroMeasurement(m);
-      Serial.print("Measurement: ");
-      Serial.println(m);
+      balanceUpdate();
+      while(Serial1.available())
+	Serial1.read();
+      //Serial.print("Measurement: ");
+      //Serial.println(m);
     }
 }

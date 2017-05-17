@@ -188,8 +188,10 @@ void doMeasurement()
 {
   // imu.read();
   // gyro_Y = imu.g.y;
+  for (int i = 0; i< 1; i++) {
   Serial1.print('m');
   Serial1.println(imu.g.y);
+  }
 }
 
 void balanceUpdateSensors()
