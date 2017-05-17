@@ -188,8 +188,8 @@ void doMeasurement()
 {
   // imu.read();
   // gyro_Y = imu.g.y;
-  Serial.print('m');
-  Serial.println(imu.g.y);
+  Serial1.print('m');
+  Serial1.println(imu.g.y);
 }
 
 void balanceUpdateSensors()
@@ -218,8 +218,8 @@ void balanceUpdate()
   balanceUpdateSensors();
   balanceDoDriveTicks();
 
-  Serial.print("Use gyro: ");
-  Serial.println(gyro_Y);
+  //Serial.print("Use gyro: ");
+  //Serial.println(gyro_Y);
 
   if (imu.a.x < 0)
   {

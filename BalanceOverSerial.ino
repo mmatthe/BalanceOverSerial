@@ -83,6 +83,7 @@ void setup()
   // motors.flipLeftMotor(true);
   // motors.flipRightMotor(true);
   Serial.begin(115200);
+  Serial1.begin(100000);
   ImuInit();
 
   ledYellow(0);
@@ -172,8 +173,8 @@ void loop()
 
   loopOrientation();
 
-  if(Serial.available())
-    serialAvailable();
+  if(Serial1.available())
+    serial1Available();
 
   balanceUpdate();
 
@@ -244,14 +245,14 @@ void loop()
 }
 
 
-void serialAvailable()
+void serial1Available()
 {
-  static char buffer[32];
+  static char buffer[128];
   static uint8_t pos = 0;
 
-  while(Serial.available())
+  while(Serial1.available())
     {
-      char c = Serial.read();
+      char c = Serial1.read();
       if (c == '\n')
 	{
 	  buffer[pos] = 0;
@@ -260,6 +261,10 @@ void serialAvailable()
 	}
       else
 	buffer[pos++] = c;
+  if (pos == 127) {
+    pos = 0;
+    Serial.println("Reset input buffer... :-(");
+  }
     }
 }
 
@@ -272,6 +277,9 @@ void processCommand(char* buffer)
     }
   else if (buffer[0]=='m')
     {
-      setGyroMeasurement(atoi(buffer+1));
+      int m = atoi(buffer+1);
+      setGyroMeasurement(m);
+      Serial.print("Measurement: ");
+      Serial.println(m);
     }
 }

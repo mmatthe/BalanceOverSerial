@@ -40,14 +40,17 @@ from visual import *
 import serial
 import string
 import math
+import os
 
 from time import time, sleep
 
 grad2rad = 3.141592/180.0
 
 # Check your COM port and baud rate
-ser = serial.Serial(port='COM10',baudrate=115200, timeout=1)
-# ser = serial.Serial(port='/dev/ttyACM0',baudrate=115200, timeout=1)
+if os.name == 'nt':
+    ser = serial.Serial(port='COM10',baudrate=115200, timeout=1)
+else:
+    ser = serial.Serial(port='/dev/ttyACM0',baudrate=115200, timeout=1)
 
 # Main scene
 scene=display(title="Pololu MinIMU-9 + Arduino AHRS")
@@ -112,7 +115,7 @@ roll=0
 pitch=0
 yaw=0
 
-delay = 3
+delay = 1
 while 1:
     line = ser.readline()
     if len(line) and line[0] == 'm':
